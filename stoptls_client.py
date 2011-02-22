@@ -1,10 +1,11 @@
+from sys import argv
 
 from twisted.python.log import startLogging
 from twisted.internet import reactor
 from twisted.internet.stdio import StandardIO
 from twisted.protocols.basic import LineReceiver
 from twisted.internet.ssl import ClientContextFactory
-from twisted.internet.endpoints import TCP4ClientEndpoint
+from twisted.internet.endpoints import clientFromString
 from twisted.internet.protocol import Factory
 
 from stoptls_server import OnionFactory
@@ -26,10 +27,6 @@ class OnionClient(LineReceiver):
         StandardIO(Sender(self))
 
 
-    def connectionLost(self, reason):
-        print 'Connection lost'
-
-
     def sendLine(self, line):
         LineReceiver.sendLine(self, line)
         if line == "secure":
@@ -39,7 +36,7 @@ class OnionClient(LineReceiver):
 
 
     def lineReceived(self, line):
-        print 'Received:', repr(line)
+        print 'Received:', line
 
 
 
@@ -49,7 +46,7 @@ def main():
     factory.contextFactory = ClientContextFactory()
     factory.protocol = OnionClient
 
-    endpoint = TCP4ClientEndpoint(reactor, "127.0.0.1", 9533)
+    endpoint = clientFromString(reactor, argv[1])
     endpoint.connect(OnionFactory(factory))
     reactor.run()
 
