@@ -23,6 +23,8 @@ class Sender(LineReceiver):
 
 
 class OnionClient(LineReceiver):
+    delimiter = '\n'
+
     def connectionMade(self):
         StandardIO(Sender(self))
 
@@ -36,7 +38,11 @@ class OnionClient(LineReceiver):
 
 
     def lineReceived(self, line):
-        print 'Received:', line
+        print 'Received:', repr(line)
+
+
+    def connectionLost(self, reason):
+        reactor.stop()
 
 
 

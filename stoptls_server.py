@@ -13,6 +13,7 @@ from twisted.internet.endpoints import serverFromString
 from stoptls_transport import OnionFactory
 
 class SomeProtocol(LineReceiver):
+    delimiter = "\n"
     def rawDataReceived(self, bytes):
         self.transport.startTLS(self.factory.contextFactory, False, bytes)
         self.setLineMode()
